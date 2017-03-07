@@ -37,3 +37,7 @@ bootRun {
     environment SPRING_PROFILES_ACTIVE: environment.SPRING_PROFILES_ACTIVE ?: "dev"
     //jvmArgs "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"
 }
+
+springBoot {
+    executable = true
+}
