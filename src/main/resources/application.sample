@@ -1,0 +1,15 @@
+spring:
+  mvc:
+    async:
+      request-timeout: -1
+
+mongo:
+  host: mongo.example.com
+  port: 47497
+  user: user
+  password: password
+  database: stats
+
+solar:
+  db:
+    url: jdbc:sqlite:/tmp/SBFspot.db
