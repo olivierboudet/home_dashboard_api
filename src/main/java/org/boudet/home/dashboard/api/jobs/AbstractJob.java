@@ -33,7 +33,7 @@ public abstract class AbstractJob<Data> {
                 try {
                     emitter.send(data);
                 } catch (IOException e) {
-                    emitter.complete();
+                    emitter.completeWithError(e);
                     emitterManager.unregister(key, emitter);
                 }
             });
