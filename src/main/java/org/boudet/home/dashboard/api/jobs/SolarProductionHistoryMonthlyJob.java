@@ -3,6 +3,7 @@ package org.boudet.home.dashboard.api.jobs;
 import org.boudet.home.dashboard.api.JobKey;
 import org.boudet.home.dashboard.api.enums.TypeEnum;
 import org.boudet.home.dashboard.api.model.SimpleStat;
+import org.boudet.home.dashboard.api.model.StatWithAverage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.mongodb.core.aggregation.DateOperators;
@@ -22,7 +23,7 @@ import java.time.temporal.TemporalField;
 import java.util.List;
 
 @Service
-public class SolarProductionHistoryMonthlyJob extends AbstractJob<List<SimpleStat>> {
+public class SolarProductionHistoryMonthlyJob extends AbstractJob<List<StatWithAverage>> {
 
     @Autowired
     @Qualifier("solarDBJdbcTemplate")
@@ -39,17 +40,15 @@ public class SolarProductionHistoryMonthlyJob extends AbstractJob<List<SimpleSta
     }
 
     @Override
-    public List<SimpleStat> fetchData(JobKey key) {
+    public List<StatWithAverage> fetchData(JobKey key) {
 
 
-        List<SimpleStat> stat = jdbcTemplate.query("select strftime('%Y-%m', timestamp) as month, sum(dayyield) as total from vwMonthData group by month;",
-                new RowMapper<SimpleStat>() {
-                    @Override
-                    public SimpleStat mapRow(ResultSet rs, int rowNum) throws SQLException {
-                        LocalDate timestamp = LocalDate.parse(rs.getString("month"), formatter);
+        List<StatWithAverage> stat = jdbcTemplate.query("select strftime('%Y-%m', timestamp) as yearmonth, strftime('%m',timestamp) as month, sum(dayyield) as total, (select avg(total) from (select strftime('%Y-%m', timestamp) as yearmonth, sum(dayyield) as total from vwMonthData t2 where strftime('%m',timestamp)=strftime('%m',t1.timestamp) group by yearmonth)) as average from vwMonthData t1 group by yearmonth;",
+                (rs, rowNum) -> {
+                    LocalDate timestamp = LocalDate.parse(rs.getString("yearmonth"), formatter);
 
-                        return new SimpleStat(timestamp.atStartOfDay(), rs.getDouble("total"));
-                    }
+                    return new StatWithAverage(timestamp.atStartOfDay(), rs.getDouble("total"), rs.getDouble("average"));
+
                 });
 
         return stat;
