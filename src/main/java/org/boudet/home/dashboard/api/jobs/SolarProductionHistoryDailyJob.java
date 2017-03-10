@@ -3,6 +3,7 @@ package org.boudet.home.dashboard.api.jobs;
 import org.boudet.home.dashboard.api.JobKey;
 import org.boudet.home.dashboard.api.enums.TypeEnum;
 import org.boudet.home.dashboard.api.model.SimpleStat;
+import org.boudet.home.dashboard.api.model.StatWithAverage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -34,14 +35,12 @@ public class SolarProductionHistoryDailyJob extends AbstractJob<List<SimpleStat>
     public List<SimpleStat> fetchData(JobKey key) {
 
 
-        List<SimpleStat> stat = jdbcTemplate.query("select timestamp, dayyield from vwMonthData order by timestamp;",
-                new RowMapper<SimpleStat>() {
-                    @Override
-                    public SimpleStat mapRow(ResultSet rs, int rowNum) throws SQLException {
-                        LocalDate timestamp = LocalDate.parse(rs.getString("timestamp"), formatter);
+        List<SimpleStat> stat = jdbcTemplate.query("select timestamp, dayyield, (select avg(dayyield) from (select strftime('%m-%d',timestamp) as day, dayyield from vwMonthData t2 where day=strftime('%m-%d',t1.timestamp))) as average from vwMonthData t1 where strftime('%Y-%m-%d', date(date('now'), '-13 months')) < timestamp order by timestamp;",
+                (rs, rowNum) -> {
+                    LocalDate timestamp = LocalDate.parse(rs.getString("timestamp"), formatter);
 
-                        return new SimpleStat(timestamp.atStartOfDay(), rs.getDouble("dayyield"));
-                    }
+                    return new StatWithAverage(timestamp.atStartOfDay(), rs.getDouble("dayyield"), rs.getDouble("average"));
+
                 });
 
         return stat;
