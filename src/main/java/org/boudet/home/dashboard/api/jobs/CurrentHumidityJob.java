@@ -3,8 +3,9 @@ package org.boudet.home.dashboard.api.jobs;
 import org.boudet.home.dashboard.api.JobKey;
 import org.boudet.home.dashboard.api.enums.TypeEnum;
 import org.boudet.home.dashboard.api.model.SimpleStat;
-import org.boudet.home.dashboard.api.model.mongo.DailyStat;
-import org.boudet.home.dashboard.api.repositories.StatRepository;
+import org.boudet.home.dashboard.api.model.mongo.MinuteStat;
+import org.boudet.home.dashboard.api.repositories.DailyStatRepository;
+import org.boudet.home.dashboard.api.repositories.MinuteStatRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -18,7 +19,7 @@ import java.util.SortedMap;
 public class CurrentHumidityJob extends AbstractJob {
 
     @Autowired
-    private StatRepository statRepository;
+    private MinuteStatRepository statRepository;
 
     @Override
     public TypeEnum getType() {
@@ -27,7 +28,7 @@ public class CurrentHumidityJob extends AbstractJob {
 
     @Override
     public SimpleStat fetchData(JobKey key) {
-        DailyStat stat = statRepository.findByTypeAndRoomAndTime("humidity", key.getRoom(), LocalDateTime.now().truncatedTo(ChronoUnit.DAYS));
+        MinuteStat stat = statRepository.findByTypeAndRoomAndTime("humidity", key.getRoom(), LocalDateTime.now().truncatedTo(ChronoUnit.DAYS));
         SortedMap<Integer, SortedMap<Integer, Double>> values = stat.getValues();
 
         Integer keyHour = values.lastKey();

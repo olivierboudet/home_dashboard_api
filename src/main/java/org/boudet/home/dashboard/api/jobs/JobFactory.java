@@ -29,6 +29,9 @@ public class JobFactory {
     private SolarProductionHistoryMonthlyJob solarProductionHistoryMonthlyJob;
 
     @Autowired
+    private ElectricityConsumptionDailyJob electricityConsumptionDailyJob;
+
+    @Autowired
     private CurrentPowerJob currentPowerJob;
 
     @PostConstruct
@@ -39,6 +42,7 @@ public class JobFactory {
         jobs.put(TypeEnum.SOLAR_HISTORY_DAILY, solarProductionHistoryDailyJob);
         jobs.put(TypeEnum.SOLAR_HISTORY_MONTHLY, solarProductionHistoryMonthlyJob);
         jobs.put(TypeEnum.POWER, currentPowerJob);
+        jobs.put(TypeEnum.ELECTRICITY_CONSUMPTION_DAILY, electricityConsumptionDailyJob);
     }
 
     public AbstractJob getJob(TypeEnum type) {

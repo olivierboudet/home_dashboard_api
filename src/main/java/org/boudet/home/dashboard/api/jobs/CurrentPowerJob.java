@@ -3,8 +3,9 @@ package org.boudet.home.dashboard.api.jobs;
 import org.boudet.home.dashboard.api.JobKey;
 import org.boudet.home.dashboard.api.enums.TypeEnum;
 import org.boudet.home.dashboard.api.model.SimpleStat;
-import org.boudet.home.dashboard.api.model.mongo.DailyStat;
-import org.boudet.home.dashboard.api.repositories.StatRepository;
+import org.boudet.home.dashboard.api.model.mongo.MinuteStat;
+import org.boudet.home.dashboard.api.repositories.DailyStatRepository;
+import org.boudet.home.dashboard.api.repositories.MinuteStatRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -18,7 +19,7 @@ import java.util.List;
 public class CurrentPowerJob extends AbstractJob<List<SimpleStat>> {
 
     @Autowired
-    private StatRepository statRepository;
+    private MinuteStatRepository statRepository;
 
     @Override
     public TypeEnum getType() {
@@ -29,7 +30,7 @@ public class CurrentPowerJob extends AbstractJob<List<SimpleStat>> {
     public List<SimpleStat> fetchData(JobKey key) {
         LocalDateTime today = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
 
-        List<DailyStat> stats = statRepository.findByTypeAndTimeGreaterThanEqual("powerW", today.minus(1, ChronoUnit.DAYS));
+        List<MinuteStat> stats = statRepository.findByTypeAndTimeGreaterThanEqual("powerW", today.minus(1, ChronoUnit.DAYS));
 
         List<SimpleStat> simpleStatList = new ArrayList();
         stats.forEach(stat -> {

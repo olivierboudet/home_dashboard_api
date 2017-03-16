@@ -8,7 +8,8 @@ public enum TypeEnum {
     SOLAR_HISTORY_MONTHLY("solar_history_monthly"),
     CONSOHP("consoHP"),
     CONSOHC("consoHC"),
-    POWER("power");
+    POWER("power"),
+    ELECTRICITY_CONSUMPTION_DAILY("electricity_consumption_daily");
 
     public String name;
 

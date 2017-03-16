@@ -32,7 +32,6 @@ public class EmitterManager {
 
         emitter.onCompletion(() -> {
             LOGGER.debug("************* Emitter completed");
-            emitter.complete();
             unregister(key, emitter);
         });
 

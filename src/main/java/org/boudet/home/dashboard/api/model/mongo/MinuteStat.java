@@ -5,12 +5,11 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedMap;
 
 @Document(collection = "stats")
-public class DailyStat {
+public class MinuteStat {
 
     @Id
     private String id;
@@ -25,17 +24,13 @@ public class DailyStat {
     private LocalDateTime time;
 
     @Field
-    private HashMap<String, Double> values;
+    private SortedMap<Integer, SortedMap<Integer, Double>> values;
 
     public LocalDateTime getTime() {
         return time;
     }
 
-    public HashMap<String, Double> getValues() {
+    public SortedMap<Integer, SortedMap<Integer,Double>> getValues() {
         return values;
-    }
-
-    public String getType() {
-        return type;
     }
 }
